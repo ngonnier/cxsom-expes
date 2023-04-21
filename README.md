@@ -1,7 +1,7 @@
 # CxSOM : towards an non hierarchical self-organizing map architecture
 ## Experiments
 
-This repository contains the implementation of some of the experiments implemented during the PhD.
+This repository contains the implementation of some of the experiments implemented during the PhD -- at work
 
 ### Installation
 
@@ -10,4 +10,3 @@ https://github.com/HerveFrezza-Buet/cxsom
 
 ### To get started
 
-AT WORK

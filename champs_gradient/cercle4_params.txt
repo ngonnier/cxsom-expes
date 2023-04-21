@@ -1,0 +1,32 @@
+  p_main       | kwd::use("walltime", WALLTIME), kwd::use("epsilon", 0);
+  p_match      | p_main,  kwd::use("sigma", .1);
+  p_learn      | p_main,  kwd::use("alpha", .1);
+  p_learn_e    | p_learn, kwd::use("r", .2 );
+  p_learn_c    | p_learn, kwd::use("r", .02);
+  p_external   | p_main;
+  p_contextual | p_main;
+  p_global     | p_main,  kwd::use("random-bmu", 1), kwd::use("beta", .5), kwd::use("delta", .05), kwd::use("deadline", DEADLINE)
+
+  cercle 5 et 6 :
+    kwd::parameters p_main, p_match, p_learn, p_learn_e, p_learn_c, p_external, p_contextual, p_global;
+  p_main       | kwd::use("walltime", WALLTIME), kwd::use("epsilon", 0);
+  p_match      | p_main,  kwd::use("sigma", .1);
+  p_learn      | p_main,  kwd::use("alpha", .1);
+  p_learn_e    | p_learn, kwd::use("r", .2 );
+  p_learn_c    | p_learn, kwd::use("r", .02);
+  p_external   | p_main;
+  p_contextual | p_main;
+  p_global     | p_main,  kwd::use("random-bmu", 1), kwd::use("beta", .5), kwd::use("delta", .001), kwd::use("deadline", DEADLINE);
+
+  cercle 5 : erreur, les cartes sont dépliées  et trajectoires calculées sans convolution mais champs bmu avec.
+  cercle 6 : erreur corrigée.
+
+  cercle7,8,9 :memes entrées, memes poids initiaux
+  cercle 7 :  bmu initialisés a random au début d'une relax.
+  cercle8 :  bmu initialisés a argmax ae
+  cercle9 :   bmu directement positionés a argmax am. relaxation effectuée de cette facon.
+cercle 12 :
+
+
+
+tracés manuscrit : tracer les champs dans cercle 6 pour t = 1 et t = 9999

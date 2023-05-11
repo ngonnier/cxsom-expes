@@ -69,14 +69,14 @@ auto make_architecture(int nmaps){
 
   Xmap->external  (X,    fx::match_gaussian, p_match, fx::learn_triangle, p_learn_e);
   Xmap->contextual(Zmap, fx::match_gaussian, p_match, fx::learn_triangle, p_learn_c1);
-  //Xmap->contextual(Ymap, fx::match_gaussian, p_match, fx::learn_triangle, p_learn_c2);
+  Xmap->contextual(Ymap, fx::match_gaussian, p_match, fx::learn_triangle, p_learn_c2);
   Ymap->external  (Y,    fx::match_gaussian, p_match, fx::learn_triangle, p_learn_e);
   Ymap->contextual(Xmap, fx::match_gaussian, p_match, fx::learn_triangle, p_learn_c1);
-  //Ymap->contextual(Zmap, fx::match_gaussian, p_match, fx::learn_triangle, p_learn_c2);
+  Ymap->contextual(Zmap, fx::match_gaussian, p_match, fx::learn_triangle, p_learn_c2);
 
   Zmap->external  (Z,    fx::match_gaussian, p_match, fx::learn_triangle, p_learn_e);
   Zmap->contextual(Ymap, fx::match_gaussian, p_match, fx::learn_triangle, p_learn_c1);
-  //Zmap->contextual(Xmap, fx::match_gaussian, p_match, fx::learn_triangle, p_learn_c2);
+  Zmap->contextual(Xmap, fx::match_gaussian, p_match, fx::learn_triangle, p_learn_c2);
   archi << Xmap << Ymap<<Zmap;
 }
 *archi = map_settings;

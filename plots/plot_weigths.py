@@ -102,6 +102,75 @@ def name_to_map(name):
         return f'M{num}'
 
 
+def get_inputs(inp_path):
+    #open inputs
+    input_dict=dict()
+    for inp in inputs:
+        with cx.variable.Realize(os.path.join(inp_path,inp+".var")) as input:
+            r = input.time_range()
+            input_dict[inp] = np.array([input[at] for at in range(r[0],min(max_bmu,r[1])])
+
+    return input_dict
+
+def get_tests(test_name,test_number,dir,map_name):
+    #get BMUs
+    path_bmu = os.path.join(dir,test_name,map_name,'BMU.var')
+    print(path_bmu)
+    with cx.variable.Realize(path_bmu) as fbmu:
+        r = fbmu.time_range()
+        bmus = np.zeros(r[1],dtype='object')
+        for i in range(r[1]):
+            bmus[i] = fbmu[i]
+    print(map_name)
+    w_path = os.path.join(dir,'wgt',map_name)
+    #get weights
+    files = [f for f in os.listdir(w_path)]
+    weights = dict()
+    for f in files:
+        var_path = os.path.join(w_path,f)
+        with cx.variable.Realize(var_path) as w:
+            weights_i = w[test_number]
+            var_name = f[:-4]
+            weights[var_name] = weights_i
+    if('We-0' in weights):
+        we = weights['We-0']
+        map_size=we.shape
+        print(map_size)
+        #get BMU weights
+        if(len(map_size)==1):
+            wbmu = [we[math.floor(elt*(map_size[0]-1))] for elt in bmus]
+        else:
+            wbmu=[]
+            for elt in bmus:
+                bmu_x = int(elt[0]*map_size[0]-1)
+                bmu_y = int(elt[1]*map_size[1]-1)
+                wbmu.append(we[bmu_x,bmu_y])
+    else:
+        wbmu = []
+
+    return bmus,wbmu,weights
+
+
+def read_data(name,idx,dir,map_names,trie_selon):
+    n = len(map_names)
+    columns = [f'bmu{mname}' for mname in map_names]
+    columns += [f'we{mname}' for mname in map_names]
+    dfw = pd.DataFrame(columns=columns)
+    for i,map in enumerate(map_names):
+        bmu, wbmu, weight = get_tests(name,idx,dir,map)
+        inp = get_inputs(dir)
+        wbmu=np.array(wbmu).flatten()
+        bmu=np.array(bmu).flatten()
+        dfinp = pd.DataFrame(inp)
+        dfw[f'bmu{map}'] = bmu
+        dfw[f'we{map}'] = wbmu
+        df = dfw.join(dfinp)
+
+    bmu1, wbmu1, weight1 = get_tests(name,idx,dir,trie_selon)
+    df[f'bmu{trie_selon}'] = bmu1
+
+    return df
+
 
 if __name__ == "__main__":
 
@@ -124,17 +193,14 @@ if __name__ == "__main__":
         print(closed)
         analysis_prefix = f"zclosed-{closed}"
 
-    max_bmu=999
+    max_bmu=99
 
     def varpath(name,timeline):
         return os.path.join(timeline, name)
 
     #open inputs
-    input_dict=dict()
-    for inp in inputs:
-        with cx.variable.Realize(os.path.join(inp_path,inp+".var")) as input:
-            r = input.time_range()
-            input_dict[inp] = np.array([input[at] for at in range(r[0],max_bmu)])
+
+    input_dict=get_inputs(os.path.join(inp_path,inp+".var"))
 
     #open U
     #if('U.var') in inputs:
